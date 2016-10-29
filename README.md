@@ -5,6 +5,6 @@ Jquery library is required.
 
 ![エビフライトライアングル](image/image.png "サンプル")
 
-<select id="select-name" name="select-name">
+`<select id="select-name" name="select-name">`
 
-$('#select-name').SelectFilter('init',{delay: 300});
+`$('#select-name').SelectFilter('init',{delay: 300});`
