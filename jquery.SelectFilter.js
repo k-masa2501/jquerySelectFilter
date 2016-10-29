@@ -222,8 +222,8 @@
         regexp = new RegExp('.+');
       }else{
         val = val.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        val = val.replace(/\s|　/g, ".*");
-        regexp = new RegExp('.*' + val + '.*');
+        val = val.replace(/\s|[[:blank:]]/g, ".*");
+        regexp = new RegExp('.*' + val + '.*', 'i');
       }
       return regexp;      
     },
