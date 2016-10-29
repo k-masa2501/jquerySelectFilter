@@ -1,0 +1,18 @@
+/*! SelectFilter v0.1.4 | (c) masanori kitajima | https://github.com/k-masa2501/SelectFilter */
+.div_filter{
+    position: absolute;
+    background: #FFFFFF;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.div_filter li{
+    list-style:none;
+}
+
+.div_filter ul{
+    margin:0px;
+    padding:0px;
+}
