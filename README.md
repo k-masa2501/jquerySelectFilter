@@ -5,4 +5,4 @@ Jquery library is required.
 
 ![エビフライトライアングル](image/image.png "サンプル")
 
->> $('.filter-change').SelectFilter('init',{delay: 300});
+$('.filter-change').SelectFilter('init',{delay: 300});
