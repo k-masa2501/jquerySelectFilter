@@ -1,4 +1,4 @@
-/*! SelectFilter v0.1.4 | (c) masanori kitajima | https://github.com/k-masa2501/SelectFilter */
+/*! SelectFilter v0.1 | (c) masanori kitajima | https://github.com/k-masa2501/jquerySelectFilter */
 .div_filter{
     position: absolute;
     background: #FFFFFF;
@@ -6,10 +6,12 @@
     border-radius: 5px;
     max-height: 200px;
     overflow-y: scroll;
+    z-index: 2147483647;
 }
 
 .div_filter li{
     list-style:none;
+    font-size: 14px;
 }
 
 .div_filter ul{

@@ -1,23 +1,27 @@
-/*! SelectFilter v0.1.3 | (c) masanori kitajima | https://github.com/k-masa2501/SelectFilter */
+/*! SelectFilter v0.1 | (c) masanori kitajima | https://github.com/k-masa2501/jquerySelectFilter */
 (function( $ ) {
 
   var methods = {
+    _get_options: function(arg){
+      
+      var delay = 300;
+
+      if (arg != null && typeof arg == 'object'){
+        if ('delay' in arg && isFinite(arg.delay)) delay = arg.delay;
+      }
+      return {delay: delay};
+    },
     init: function(o_this, arg){
 
       var obj = null;
       var user_data = null;
       var div_filter = null;
       var ul_filter = null;
-      var input_hidden = null;
       var input_text = null;
       var radio_id = null;
-      var delay = null;
+      var option = null;
 
-      if (arg == null || typeof arg != 'object' || !('delay' in arg) || !(isFinite(arg.delay))){
-        delay = 300;
-      }else{
-        delay = arg.delay;
-      }
+      option = methods._get_options(arg);
 
       for(var i=0;i < o_this.length;i++){
 
@@ -26,12 +30,10 @@
         user_data = new Array();
         div_filter = $("<div class='div_filter' tabIndex='0' style='display: none;'></div>");
         ul_filter = $("<ul></ul>");
-        input_hidden = $("<input type='hidden' data-text='' name='"+ obj.attr('name') +"'>");
-        input_text = $("<input type='text'>");
+        input_text = $("<input type='text' name='"+ obj.attr('name') +"' class='"+ obj.attr('class') +"'>");
         radio_id = obj.attr('id') + '-radio-id';
 
         $('body').append(div_filter);
-        obj.after(input_hidden);
         obj.after(input_text);
         div_filter.append(ul_filter);
 
@@ -42,10 +44,9 @@
         obj.data('user_data', user_data);
         obj.data('div_filter', div_filter);
         obj.data('ul_filter', ul_filter);
-        obj.data('input_hidden', input_hidden);
         obj.data('input_text', input_text);
         obj.data('radio_id', radio_id);
-        obj.data('delay', delay);
+        obj.data('delay', option.delay);
 
         obj.hide();
 
@@ -92,11 +93,11 @@
         methods._click_radio(this, obj);
       });
 
-      obj.on('destroy', function(e, arg) {
+      $(document).on('SelectFilter.destroy',  function(e, arg){
         methods._destroy(obj);
       });
 
-      obj.on('set_value', function(e, arg) {
+      $(document).on('SelectFilter.set_value',  function(e, arg){
         methods._set_value(arg, obj);
       });
     },
@@ -106,22 +107,20 @@
     },
     _focusout: function (obj){
       var div_filter = obj.data('div_filter');
-      var input_hidden = obj.data('input_hidden');
       var input_text = obj.data('input_text');
 
       if ('1' != div_filter.attr('data-onmouse')){
-        input_text.val(input_hidden.attr('data-text'));
+        input_text.val(obj.attr('data-text'));
         div_filter.hide();
       }
     },
     _click_radio: function(radio, obj){
       var text = $(radio).attr('data-text');
-      var input_hidden = obj.data('input_hidden');
       var input_text = obj.data('input_text');
 
       input_text.val(text);
-      input_hidden.attr('data-text', text);
-      input_hidden.val($(radio).val());
+      obj.attr('data-text', text);
+      obj.val($(radio).val());
     },
     _mouseenter: function(o){
       $(o).attr('data-onmouse','1');      
@@ -139,30 +138,28 @@
     },
     _destroy: function(obj){
       var div_filter = obj.data('div_filter');
-      var input_hidden = obj.data('input_hidden');
       var input_text = obj.data('input_text');
       var radio_id = obj.data('radio_id');
 
       input_text.off();
       div_filter.off();
-      obj.off();
       $(document).off("click", '.'+radio_id);
+      $(document).off("SelectFilter.destroy");
+      $(document).off("SelectFilter.set_value");
+      obj.off();
 
       div_filter.remove();
-      input_hidden.remove();
       input_text.remove();
 
       obj.removeData('user_data');
       obj.removeData('div_filter');
       obj.removeData('ul_filter');
-      obj.removeData('input_hidden');
       obj.removeData('input_text');
       obj.removeData('delay');
       obj.removeData('radio_id');
 
       div_filter = null;
       input_text = null;
-      input_hidden = null;
       radio_id = null;
       obj.init = null;
 
@@ -170,26 +167,24 @@
     },
     _set_value: function (val, obj){
       var id = val != null ? val:'';
-      var input_hidden = obj.data('input_hidden');
       var input_text = obj.data('input_text');
       var user_data = obj.data('user_data');
 
       input_text.val('');
-      input_hidden.attr('data-text', '');
-      input_hidden.val('');
+      obj.attr('data-text', '');
+      obj.val('');
 
       $.each(user_data,function(i,v){
         if (String(id) == String(v[0])){
           input_text.val(v[1]);
-          input_hidden.attr('data-text', v[1]);
-          input_hidden.val(v[0]);
+          obj.attr('data-text', v[1]);
+          obj.val(v[0]);
           return false;
         }
       });
     },
     _search: function(obj){
       var ul_filter = obj.data('ul_filter');
-      var input_hidden = obj.data('input_hidden');
       var input_text = obj.data('input_text');
       var user_data = obj.data('user_data');
       var radio_id = obj.data('radio_id');
@@ -208,8 +203,8 @@
       if ('' != tmp){
         $.each(ul_filter.find("input[type='radio']"), function(i,v){
           $(v).attr('checked', 'checked');
-          input_hidden.attr('data-text', $(v).attr('data-text'));
-          input_hidden.val($(v).val());
+          obj.attr('data-text', $(v).attr('data-text'));
+          obj.val($(v).val());
           return false;
         });
       }else{
@@ -236,9 +231,9 @@
     _show: function(obj){
       var div_filter = obj.data('div_filter');
       var input_text = obj.data('input_text');
-      var left = input_text.position().left + Number(input_text.css('margin-left').replace(/px/g, ''));
-      var top = input_text.outerHeight()+input_text.position().top;
-      div_filter.css('min-width',String(input_text.width())+'px');
+      var left = input_text.offset().left;
+      var top = input_text.outerHeight()+input_text.offset().top;
+      div_filter.css('min-width',String(input_text.outerWidth())+'px');
       div_filter.css('left', String(left)+'px');
       div_filter.css('top', String(top)+'px');
       div_filter.show();
@@ -252,7 +247,7 @@
     if ('init' == method){
       methods[method](this, arguments[1]);
     }else{
-      $(this).trigger(method, arguments[1]);
+      $(this).trigger('SelectFilter.'+method, arguments[1]);
     }
 
   };
