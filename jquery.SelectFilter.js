@@ -14,7 +14,7 @@
     init: function(o_this, arg){
 
       var obj = null;
-      var user_data = null;
+      var selection = null;
       var div_filter = null;
       var ul_filter = null;
       var input_text = null;
@@ -27,7 +27,7 @@
 
         obj = $(o_this[i]);
 
-        user_data = new Array();
+        selection = new Array();
         div_filter = $("<div class='div_filter' tabIndex='0' style='display: none;'></div>");
         ul_filter = $("<ul></ul>");
         input_text = $("<input type='text' name='"+ obj.attr('name') +"' class='"+ obj.attr('class') +"'>");
@@ -38,10 +38,10 @@
         div_filter.append(ul_filter);
 
         $.each(obj.children(),function(i,v){
-          user_data.push([$(v).val(),$(v).text()]);
+          selection.push([$(v).val(),$(v).text()]);
         });
 
-        obj.data('user_data', user_data);
+        obj.data('selection', selection);
         obj.data('div_filter', div_filter);
         obj.data('ul_filter', ul_filter);
         obj.data('input_text', input_text);
@@ -151,7 +151,7 @@
       div_filter.remove();
       input_text.remove();
 
-      obj.removeData('user_data');
+      obj.removeData('selection');
       obj.removeData('div_filter');
       obj.removeData('ul_filter');
       obj.removeData('input_text');
@@ -168,13 +168,13 @@
     _set_value: function (val, obj){
       var id = val != null ? val:'';
       var input_text = obj.data('input_text');
-      var user_data = obj.data('user_data');
+      var selection = obj.data('selection');
 
       input_text.val('');
       obj.attr('data-text', '');
       obj.val('');
 
-      $.each(user_data,function(i,v){
+      $.each(selection,function(i,v){
         if (String(id) == String(v[0])){
           input_text.val(v[1]);
           obj.attr('data-text', v[1]);
@@ -186,16 +186,16 @@
     _search: function(obj){
       var ul_filter = obj.data('ul_filter');
       var input_text = obj.data('input_text');
-      var user_data = obj.data('user_data');
+      var selection = obj.data('selection');
       var radio_id = obj.data('radio_id');
 
       var regexp = methods._set_regexp(input_text.val());
       var tmp = '';
 
-      for (var i=0; i < user_data.length; i++){
-        if (regexp.test(user_data[i][1])){
+      for (var i=0; i < selection.length; i++){
+        if (regexp.test(selection[i][1])){
           tmp = tmp + "<li><input type='radio' class='"+ radio_id +"' name='"+ radio_id +
-              "' data-text='"+ user_data[i][1] +"' value='"+ user_data[i][0] +"'>"+ user_data[i][1] +"</li>";
+              "' data-text='"+ selection[i][1] +"' value='"+ selection[i][0] +"'>"+ selection[i][1] +"</li>";
         }
       }
 
