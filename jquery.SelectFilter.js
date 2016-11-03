@@ -30,7 +30,7 @@
         selection = new Array();
         div_filter = $("<div class='div_filter' tabIndex='0' style='display: none;'></div>");
         ul_filter = $("<ul></ul>");
-        input_text = $("<input type='text' name='"+ obj.attr('name') +"' class='"+ obj.attr('class') +"'>");
+        input_text = $("<input type='text' class='"+ obj.attr('class') +"'>");
         radio_id = obj.attr('id') + '-radio-id';
 
         $('body').append(div_filter);
@@ -38,7 +38,7 @@
         div_filter.append(ul_filter);
 
         $.each(obj.children(),function(i,v){
-          selection.push([$(v).val(),$(v).text()]);
+          selection.push([$(v).text(),$(v).val()]);
         });
 
         obj.data('selection', selection);
@@ -175,10 +175,10 @@
       obj.val('');
 
       $.each(selection,function(i,v){
-        if (String(id) == String(v[0])){
-          input_text.val(v[1]);
-          obj.attr('data-text', v[1]);
-          obj.val(v[0]);
+        if (String(id) == String(v[1])){
+          input_text.val(v[0]);
+          obj.attr('data-text', v[0]);
+          obj.val(v[1]);
           return false;
         }
       });
@@ -193,9 +193,9 @@
       var tmp = '';
 
       for (var i=0; i < selection.length; i++){
-        if (regexp.test(selection[i][1])){
+        if (regexp.test(selection[i][0])){
           tmp = tmp + "<li><input type='radio' class='"+ radio_id +"' name='"+ radio_id +
-              "' data-text='"+ selection[i][1] +"' value='"+ selection[i][0] +"'>"+ selection[i][1] +"</li>";
+              "' data-text='"+ selection[i][0] +"' value='"+ selection[i][1] +"'>"+ selection[i][0] +"</li>";
         }
       }
 
