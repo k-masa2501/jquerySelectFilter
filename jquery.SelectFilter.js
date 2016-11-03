@@ -15,7 +15,7 @@
 
       var obj = null;
       var selection = null;
-      var div_filter = null;
+      var div_control = null;
       var ul_filter = null;
       var input_text = null;
       var radio_id = null;
@@ -28,21 +28,21 @@
         obj = $(o_this[i]);
 
         selection = new Array();
-        div_filter = $("<div class='div_filter' tabIndex='0' style='display: none;'></div>");
+        div_control = $("<div class='div_control' tabIndex='0' style='display: none;'></div>");
         ul_filter = $("<ul></ul>");
         input_text = $("<input type='text' class='"+ obj.attr('class') +"'>");
         radio_id = obj.attr('id') + '-radio-id';
 
-        $('body').append(div_filter);
+        $('body').append(div_control);
         obj.after(input_text);
-        div_filter.append(ul_filter);
+        div_control.append(ul_filter);
 
         $.each(obj.children(),function(i,v){
           selection.push([$(v).text(),$(v).val()]);
         });
 
         obj.data('selection', selection);
-        obj.data('div_filter', div_filter);
+        obj.data('div_control', div_control);
         obj.data('ul_filter', ul_filter);
         obj.data('input_text', input_text);
         obj.data('radio_id', radio_id);
@@ -57,7 +57,7 @@
       }
     },
     _add_event_lisner: function(obj){
-      var div_filter = obj.data('div_filter');
+      var div_control = obj.data('div_control');
       var input_text = obj.data('input_text');
       var radio_id = obj.data('radio_id');
 
@@ -77,15 +77,15 @@
         methods._keyup(obj);
       });
 
-      div_filter.focusout(function(){
+      div_control.focusout(function(){
         methods._focusout(obj);
       });
 
-      div_filter.mouseenter(function(){
+      div_control.mouseenter(function(){
         methods._mouseenter(this);
       });
 
-      div_filter.mouseleave(function(){
+      div_control.mouseleave(function(){
         methods._mouseleave(this);
       });
 
@@ -106,12 +106,12 @@
       methods._show(obj);
     },
     _focusout: function (obj){
-      var div_filter = obj.data('div_filter');
+      var div_control = obj.data('div_control');
       var input_text = obj.data('input_text');
 
-      if ('1' != div_filter.attr('data-onmouse')){
+      if ('1' != div_control.attr('data-onmouse')){
         input_text.val(obj.attr('data-text'));
-        div_filter.hide();
+        div_control.hide();
       }
     },
     _click_radio: function(radio, obj){
@@ -130,35 +130,35 @@
     },
     _keyup: function(obj){
       var delay = obj.data('delay');
-      var div_filter = obj.data('div_filter');
+      var div_control = obj.data('div_control');
       methods._search_delay((function(){
         methods._search(obj);
-        if ('none' == div_filter.css('display')) methods._show(obj);
+        if ('none' == div_control.css('display')) methods._show(obj);
       }),delay);
     },
     _destroy: function(obj){
-      var div_filter = obj.data('div_filter');
+      var div_control = obj.data('div_control');
       var input_text = obj.data('input_text');
       var radio_id = obj.data('radio_id');
 
       input_text.off();
-      div_filter.off();
+      div_control.off();
       $(document).off("click", '.'+radio_id);
       $(document).off("SelectFilter.destroy");
       $(document).off("SelectFilter.set_value");
       obj.off();
 
-      div_filter.remove();
+      div_control.remove();
       input_text.remove();
 
       obj.removeData('selection');
-      obj.removeData('div_filter');
+      obj.removeData('div_control');
       obj.removeData('ul_filter');
       obj.removeData('input_text');
       obj.removeData('delay');
       obj.removeData('radio_id');
 
-      div_filter = null;
+      div_control = null;
       input_text = null;
       radio_id = null;
       obj.init = null;
@@ -229,14 +229,14 @@
       })(callback, ms);
     },
     _show: function(obj){
-      var div_filter = obj.data('div_filter');
+      var div_control = obj.data('div_control');
       var input_text = obj.data('input_text');
       var left = input_text.offset().left;
       var top = input_text.outerHeight()+input_text.offset().top;
-      div_filter.css('min-width',String(input_text.outerWidth())+'px');
-      div_filter.css('left', String(left)+'px');
-      div_filter.css('top', String(top)+'px');
-      div_filter.show();
+      div_control.css('min-width',String(input_text.outerWidth())+'px');
+      div_control.css('left', String(left)+'px');
+      div_control.css('top', String(top)+'px');
+      div_control.show();
     },
     timer: 0
   };

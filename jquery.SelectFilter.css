@@ -1,5 +1,5 @@
 /*! SelectFilter v0.1 | (c) masanori kitajima | https://github.com/k-masa2501/jquerySelectFilter */
-.div_filter{
+.div_control{
     position: absolute;
     background: #FFFFFF;
     border: 1px solid #000000;
@@ -9,11 +9,11 @@
     z-index: 2147483647;
 }
 
-.div_filter li{
+.div_control li{
     list-style:none;
 }
 
-.div_filter ul{
+.div_control ul{
     margin:0px;
     padding:0px;
 }
