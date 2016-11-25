@@ -5,12 +5,28 @@
     border: 1px solid #000000;
     border-radius: 5px;
     max-height: 200px;
-    overflow-y: scroll;
+    overflow: hidden;
     z-index: 2147483647;
 }
 
+.div_ulList{
+    overflow-y: scroll;
+    width:100%;
+    max-height: 200px;
+}
+
+div.div_ulList ul li label{
+    display: block;
+}
+
+div.div_ulList ul li label:hover{
+    font-weight: bold;
+}
+
 .div_control li{
-    list-style:none;
+    list-style: none;
+    font-size: 12px;
+    padding: 2px;
 }
 
 .div_control ul{

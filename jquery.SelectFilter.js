@@ -10,9 +10,9 @@
       var ul_filter = null;
       var input_text = null;
       var radio_id = null;
-      var option = null;
+      var div_ulList = null;
 
-      option = methods._get_options(arg);
+      var option = methods._get_options(arg);
 
       for(var i=0,len=o_this.length;i < len;i++){
 
@@ -20,13 +20,18 @@
 
         selection = new Array();
         div_control = $("<div class='div_control' tabIndex='0' style='display: none;'></div>");
+        div_ulList = $("<div class='div_ulList'></div>");
         ul_filter = $("<ul></ul>");
         input_text = $("<input type='text' name='"+ obj.attr('name') +"'>");
         radio_id = obj.attr('id') + '-radio-id';
 
         $('body').append(div_control);
         obj.before(input_text);
-        div_control.append(ul_filter);
+        div_control.html(div_ulList);
+        div_ulList.html(ul_filter);
+
+        input_text.css('width',String(option.width)+'px');
+        div_control.css('width',String(input_text.outerWidth())+'px');
 
         $.each(obj.children(),function(i,v){
           selection.push([$(v).text(),$(v).val()]);
@@ -37,7 +42,7 @@
         obj.data('ul_filter', ul_filter);
         obj.data('input_text', input_text);
         obj.data('radio_id', radio_id);
-        obj.data('delay', option.delay);
+        obj.data('option', option);
 
         obj.hide();
 
@@ -74,7 +79,7 @@
         obj.removeData('div_control');
         obj.removeData('ul_filter');
         obj.removeData('input_text');
-        obj.removeData('delay');
+        obj.removeData('option');
         obj.removeData('radio_id');
 
         div_control = null;
@@ -85,8 +90,8 @@
         obj.show();
       }
     },
-    _set_value: function (obj, val){
-      var id = val != null ? val:'';
+    _set_value: function (obj, _val){
+      var val = _val != null ? _val:'';
       var input_text = obj.data('input_text');
       var selection = obj.data('selection');
 
@@ -95,7 +100,7 @@
       obj.val('');
 
       $.each(selection,function(i,v){
-        if (String(id) == String(v[1])){
+        if (String(val) == String(v[1])){
           input_text.val(v[0]);
           obj.attr('data-text', v[0]);
           obj.val(v[1]);
@@ -108,25 +113,21 @@
       var input_text = obj.data('input_text');
       var radio_id = obj.data('radio_id');
 
-      input_text.mousedown(function(){
-        methods._mousedown(obj);
-      });
+      input_text.mousedown($.proxy(function(){
+        methods._mousedown(this);
+      },obj));
 
-      input_text.focusout(function(){
-        methods._focusout(obj);
-      });
+      input_text.focusout($.proxy(function(){
+        methods._focusout(this);
+      },obj));
 
-      input_text.keyup(function() {
-        methods._keyup(obj);
-      });
+      input_text.on('input propertychange',$.proxy(function(){
+        methods._keyup(this);
+      },obj));
 
-      input_text.on('input propertychange',function(){
-        methods._keyup(obj);
-      });
-
-      div_control.focusout(function(){
-        methods._focusout(obj);
-      });
+      div_control.focusout($.proxy(function(){
+        methods._focusout(this);
+      },obj));
 
       div_control.mouseenter(function(){
         methods._mouseenter(this);
@@ -136,9 +137,9 @@
         methods._mouseleave(this);
       });
 
-      $(document).on('click', '.'+radio_id, function(){
-        methods._click_radio(this, obj);
-      });
+      $(document).on('click', '.'+radio_id, $.proxy(function(e){
+        methods._click_radio(e, this);
+      },obj));
 
     },
     _mousedown: function(obj){
@@ -154,13 +155,22 @@
         div_control.hide();
       }
     },
-    _click_radio: function(radio, obj){
+    _click_radio: function(event, obj){
+
+      var radio = $(event.currentTarget);
       var text = $(radio).attr('data-text');
       var input_text = obj.data('input_text');
+      var option = obj.data('option');
 
       input_text.val(text);
       obj.attr('data-text', text);
       obj.val($(radio).val());
+
+      methods._delay_proc((function(){
+        var div_control = obj.data('div_control');
+        div_control.hide();
+      }),option.delay);
+      
     },
     _mouseenter: function(o){
       $(o).attr('data-onmouse','1');      
@@ -169,37 +179,36 @@
       $(o).attr('data-onmouse','0');      
     },
     _keyup: function(obj){
-      var delay = obj.data('delay');
-      var div_control = obj.data('div_control');
-      methods._search_delay((function(){
+      var option = obj.data('option');
+
+      methods._delay_proc((function(obj){
+        var div_control = obj.data('div_control');
         methods._search(obj);
         if ('none' == div_control.css('display')) methods._show(obj);
-      }),delay);
+      })(obj),option.delay);
     },
     _search: function(obj){
       var ul_filter = obj.data('ul_filter');
       var input_text = obj.data('input_text');
       var selection = obj.data('selection');
       var radio_id = obj.data('radio_id');
+      var selected = obj.attr('data-text');
+      var checked = '';
 
       var regexp = methods._set_regexp(input_text.val());
       var tmp = '';
 
       for (var i=0,len=selection.length; i < len; i++){
         if (regexp.test(selection[i][0])){
-          tmp = tmp + "<li><input type='radio' class='"+ radio_id +"' name='"+ radio_id +
-              "' data-text='"+ selection[i][0] +"' value='"+ selection[i][1] +"'>"+ selection[i][0] +"</li>";
+          if (selected == selection[i][0]) {checked='checked';}else{checked=''}
+          tmp = tmp + "<li><label><input type='radio' class='"+ radio_id +"' name='"+ radio_id + "'";
+          tmp += "data-text='"+ selection[i][0] +"' value='"+ selection[i][1] +"'" + checked + ">"+ selection[i][0];
+          tmp += "</label></li>";
         }
       }
 
-      ul_filter[0].innerHTML = tmp;
       if ('' != tmp){
-        $.each(ul_filter.find("input[type='radio']"), function(i,v){
-          $(v).attr('checked', 'checked');
-          obj.attr('data-text', $(v).attr('data-text'));
-          obj.val($(v).val());
-          return false;
-        });
+        ul_filter[0].innerHTML = tmp;
       }else{
         ul_filter[0].innerHTML = '<li>not exist.</li>';
       }
@@ -215,7 +224,7 @@
       }
       return regexp;      
     },
-    _search_delay: function(callback, ms){
+    _delay_proc: function(callback, ms){
       return (function(callback, ms){
         clearTimeout (methods.timer);
         methods.timer = setTimeout(callback, ms);
@@ -226,7 +235,6 @@
       var input_text = obj.data('input_text');
       var left = input_text.offset().left;
       var top = input_text.outerHeight()+input_text.offset().top;
-      div_control.css('min-width',String(input_text.outerWidth())+'px');
       div_control.css('left', String(left)+'px');
       div_control.css('top', String(top)+'px');
       div_control.show();
@@ -234,20 +242,23 @@
     _get_options: function(arg){
 
       var delay = 300;
+      var width = 200;
 
       if (arg != null && typeof arg == 'object'){
         if ('delay' in arg && isFinite(arg.delay)) delay = arg.delay;
+        if ('width' in arg && isFinite(arg.width)) width = arg.width;
+
       }
-      return {delay: delay};
+      return {
+        delay: delay,
+        width: width
+      };
     },
     timer: 0
   };
 
-
   $.fn.SelectFilter = function(method) {
-
       methods[method](this, arguments[1]);
-
   };
 
 })( jQuery );
