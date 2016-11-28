@@ -70,6 +70,7 @@
         input_text.off();
         div_control.off();
         $(document).off("click", '.' + radio_id);
+        $(window).off('resize'+'.'+radio_id);
         obj.off();
 
         div_control.remove();
@@ -109,6 +110,7 @@
       });
     },
     _add_event_lisner: function(obj){
+
       var div_control = obj.data('div_control');
       var input_text = obj.data('input_text');
       var radio_id = obj.data('radio_id');
@@ -139,6 +141,10 @@
 
       $(document).on('click', '.'+radio_id, $.proxy(function(e){
         methods._click_radio(e, this);
+      },obj));
+
+      $(window).on('resize'+'.'+radio_id, $.proxy(function(){
+        methods._focusout(this);
       },obj));
 
     },
