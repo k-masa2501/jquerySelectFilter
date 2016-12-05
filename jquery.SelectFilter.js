@@ -135,9 +135,10 @@
         methods._mouseenter(this);
       });
 
-      div_control.mouseleave(function(){
+      div_control.mouseleave($.proxy(function(){
         methods._mouseleave(this);
-      });
+      },obj));
+
 
       $(document).on('click', '.'+radio_id, $.proxy(function(e){
         methods._click_radio(e, this);
@@ -181,16 +182,26 @@
     _mouseenter: function(o){
       $(o).attr('data-onmouse','1');      
     },
-    _mouseleave: function(o){
-      $(o).attr('data-onmouse','0');      
+    _mouseleave: function(obj){
+      var div_control = obj.data('div_control');
+      var input_text = obj.data('input_text');
+      div_control.attr('data-onmouse','0');
+
+      if (!input_text.is(":focus") && !div_control.is(":focus")){
+        input_text.val(obj.attr('data-text'));
+        div_control.hide();
+      }
     },
     _keyup: function(obj){
       var option = obj.data('option');
 
       methods._delay_proc((function(obj){
         var div_control = obj.data('div_control');
+        var input_text = obj.data('input_text');
         methods._search(obj);
-        if ('none' == div_control.css('display')) methods._show(obj);
+        if (input_text.is(":focus") && 'none' == div_control.css('display')){
+          methods._show(obj);
+        }
       })(obj),option.delay);
     },
     _search: function(obj){
