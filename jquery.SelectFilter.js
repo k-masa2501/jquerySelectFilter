@@ -210,16 +210,14 @@
       var selection = obj.data('selection');
       var radio_id = obj.data('radio_id');
       var selected = obj.attr('data-text');
-      var checked = '';
 
       var regexp = methods._set_regexp(input_text.val());
       var tmp = '';
 
       for (var i=0,len=selection.length; i < len; i++){
         if (regexp.test(selection[i][0])){
-          if (selected == selection[i][0]) {checked='checked';}else{checked=''}
           tmp = tmp + "<li><button class='"+ radio_id +"' name='"+ radio_id + "'";
-          tmp += "data-text='"+ selection[i][0] +"' value='"+ selection[i][1] +"'" + checked + ">"+ selection[i][0];
+          tmp += " data-text='"+ selection[i][0] +"' value='"+ selection[i][1] +"'>"+ selection[i][0];
           tmp += "</button></li>";
         }
       }
